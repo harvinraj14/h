@@ -75,6 +75,54 @@
                 height: 100px;
                 font-size: 40px;
             }
+            
+            /* Hide floating photos on mobile for better performance */
+            .floating-photos {
+                display: none;
+            }
+            
+            /* Mobile photo gallery instead */
+            .mobile-gallery {
+                display: block;
+                margin: 20px 0;
+                text-align: center;
+            }
+            
+            .gallery-row {
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                margin: 15px 0;
+                flex-wrap: wrap;
+            }
+            
+            .gallery-photo {
+                width: 70px;
+                height: 70px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 3px solid #fff;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                animation: gentlePulse 3s ease-in-out infinite;
+                opacity: 0.8;
+            }
+            
+            .gallery-photo:nth-child(1) { animation-delay: 0s; }
+            .gallery-photo:nth-child(2) { animation-delay: 0.5s; }
+            .gallery-photo:nth-child(3) { animation-delay: 1s; }
+            .gallery-photo:nth-child(4) { animation-delay: 1.5s; }
+            
+            @keyframes gentlePulse {
+                0%, 100% { transform: scale(1); opacity: 0.8; }
+                50% { transform: scale(1.1); opacity: 1; }
+            }
+        }
+        
+        /* Desktop floating photos */
+        @media (min-width: 769px) {
+            .mobile-gallery {
+                display: none;
+            }
         }
 
         .login-screen {
@@ -374,11 +422,54 @@
             margin: 15px 0;
             border-left: 4px solid #8e44ad;
         }
+
+        .music-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50px;
+            padding: 10px 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .music-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .music-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .music-info {
+            font-size: 12px;
+            color: #666;
+            margin-left: 8px;
+            font-family: 'Georgia', serif;
+        }
     </style>
 </head>
 <body>
     <div class="sparkles" id="sparkles"></div>
     <div class="floating-photos" id="floatingPhotos"></div>
+    
+    <!-- Music Controls -->
+    <div class="music-controls" id="musicControls" style="display: none;">
+        <button class="music-btn" id="musicBtn" onclick="toggleMusic()">🎵</button>
+        <span class="music-info">BAE 💕</span>
+    </div>
+    
+    <!-- Hidden Audio Element -->
+    <audio id="bgMusic" loop>
+        <source src="BAE.mp3" type="audio/mpeg">
+        Your browser does not support audio.
+    </audio>
     
     <div class="container">
         <!-- Login Screen -->
@@ -403,11 +494,26 @@
             </div>
             <p>Welcome to our digital love letter, my darling. Every click will take you deeper into my heart and show you exactly why you mean everything to me...</p>
 
+            <!-- Mobile Photo Gallery -->
+            <div class="mobile-gallery" id="mobileGallery">
+                <div class="gallery-row">
+                    <img src="1STHK.jpg" class="gallery-photo" alt="Memory 1">
+                    <img src="Hvivo.jpg" class="gallery-photo" alt="Memory 2">
+                    <img src="Hbeach.jpg" class="gallery-photo" alt="Memory 3">
+                </div>
+                <div class="gallery-row">
+                    <img src="HKsha.jpg" class="gallery-photo" alt="Memory 4">
+                    <img src="Hbirthday.jpg" class="gallery-photo" alt="Memory 5">
+                    <img src="HCar1.jpg" class="gallery-photo" alt="Memory 6">
+                    <img src="HArcade.jpg" class="gallery-photo" alt="Memory 7">
+                </div>
+            </div>
+
             <div class="memory-section" onclick="toggleMemory('memory1')">
                 <h2>✨ The Yes/No Moment at Batok Garden</h2>
                 <h3>March 14, 2022 - The start of HarWinsha</h3>
                 <div class="memory-content" id="memory1">
-                    <img src="1STHK.jpg" alt="Our very first picture together" style="width: 200px; height: 250px; border-radius: 15px; object-fit: cover; margin: 20px auto; display: block; box-shadow: 0 15px 30px rgba(0,0,0,0.4); border: 4px solid #fff; transition: all 0.3s; transform: rotate(-2deg);" onmouseover="this.style.transform='scale(1.05) rotate(0deg)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.5)'" onmouseout="this.style.transform='scale(1) rotate(-2deg)'; this.style.boxShadow='0 15px 30px rgba(0,0,0,0.4)'">>
+                    <img src="1STHK.jpg" alt="Our very first picture together" style="width: 200px; height: 250px; border-radius: 15px; object-fit: cover; margin: 20px auto; display: block; box-shadow: 0 15px 30px rgba(0,0,0,0.4); border: 4px solid #fff; transition: all 0.3s; transform: rotate(-2deg);" onmouseover="this.style.transform='scale(1.05) rotate(0deg)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.5)'" onmouseout="this.style.transform='scale(1) rotate(-2deg)'; this.style.boxShadow='0 15px 30px rgba(0,0,0,0.4)'">
                     <p><strong>When HarWinsha Officially Began</strong></p>
                     <p>Batok Garden will forever be our special place. That moment when I asked you the question that changed everything, and you said yes! I still remember exactly how nervous I was, but seeing your smile made all my worries disappear.</p>
                     <div class="love-quote">
@@ -422,6 +528,12 @@
                 <h3>Ayam Penyet and the beginning of forever</h3>
                 <div class="memory-content" id="memory2">
                     <img src="HSIT.jpg" alt="Your amazing milestone achievement" style="width: 200px; height: 250px; border-radius: 15px; object-fit: cover; margin: 20px auto; display: block; box-shadow: 0 15px 30px rgba(0,0,0,0.4); border: 4px solid #fff; transition: all 0.3s; transform: rotate(1deg);" onmouseover="this.style.transform='scale(1.05) rotate(0deg)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.5)'" onmouseout="this.style.transform='scale(1) rotate(1deg)'; this.style.boxShadow='0 15px 30px rgba(0,0,0,0.4)'">
+                    <p><strong>When I Knew You Were The One</strong></p>
+                    <p>Our first official date at Seah Im! Who knew that sharing ayam penyet could be so romantic? The food was amazing, but what made it perfect was you. The way we talked for hours, how comfortable everything felt, how you made me laugh...</p>
+                    <div class="love-quote">
+                        "That night at Seah Im, I realized I never wanted our conversations to end."
+                    </div>
+                    <p><em>Even now, every time we eat ayam penyet, I'm reminded of that first perfect date when I knew you were going to be someone very special in my life.</em></p>
                 </div>
             </div>
 
@@ -430,6 +542,12 @@
                 <h3>Cinema dates and falling deeper</h3>
                 <div class="memory-content" id="memory3">
                     <img src="HKsha.jpg" alt="Our favorite picture together" style="width: 200px; height: 250px; border-radius: 15px; object-fit: cover; margin: 20px auto; display: block; box-shadow: 0 15px 30px rgba(0,0,0,0.4); border: 4px solid #fff; transition: all 0.3s; transform: rotate(-1deg);" onmouseover="this.style.transform='scale(1.05) rotate(0deg)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.5)'" onmouseout="this.style.transform='scale(1) rotate(-1deg)'; this.style.boxShadow='0 15px 30px rgba(0,0,0,0.4)'">
+                    <p><strong>Our First Cinema Adventure</strong></p>
+                    <p>Thiruchithurambalam - our first movie together! I was probably more focused on you than the screen. The way you got so into the movie, how you'd lean over to whisper comments, sharing popcorn... It felt so natural, like we'd been doing this forever.</p>
+                    <div class="love-quote">
+                        "That's when I knew - I wanted to experience every story, every adventure, every moment with you by my side."
+                    </div>
+                    <p><em>Now every time we watch movies together, I'm reminded of that first cinema date when I realized I never wanted to watch anything without you again.</em></p>
                 </div>
             </div>
 
@@ -509,6 +627,36 @@
             }
         }
 
+        // Music functionality
+        let isPlaying = false;
+        const bgMusic = document.getElementById('bgMusic');
+        const musicBtn = document.getElementById('musicBtn');
+        const musicControls = document.getElementById('musicControls');
+
+        function toggleMusic() {
+            if (isPlaying) {
+                bgMusic.pause();
+                musicBtn.textContent = '🎵';
+                isPlaying = false;
+            } else {
+                bgMusic.play().catch(e => {
+                    console.log('Music autoplay prevented by browser');
+                });
+                musicBtn.textContent = '🔇';
+                isPlaying = true;
+            }
+        }
+
+        function startMusic() {
+            musicControls.style.display = 'block';
+            // Try to autoplay (browsers may block this)
+            bgMusic.play().catch(e => {
+                console.log('Autoplay prevented - user needs to click play');
+            });
+            isPlaying = true;
+            musicBtn.textContent = '🔇';
+        }
+
         // Password check - CUSTOMIZE THIS WITH YOUR SPECIAL DATE
         function checkPassword() {
             const password = document.getElementById('passwordInput').value.trim();
@@ -522,6 +670,7 @@
                 document.getElementById('mainContent').style.display = 'block';
                 createSparkles();
                 createFloatingPhotos(); // Add floating photos when unlocked!
+                startMusic(); // Start the romantic music!
                 
                 // Add a little celebration effect
                 setTimeout(() => {
